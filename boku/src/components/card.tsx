@@ -34,10 +34,10 @@ export default function Card() {
           ...prevHoverText,
           [key]:
             key === "topText1"
-              ? "FLUTTER"
+              ? "Flutter"
               : key === "topText2"
-              ? "SWIFT"
-              : "DEVELOPER",
+              ? "Swift"
+              : "Developer",
         }));
         setIsHovering((prevIsHovering) => ({
           ...prevIsHovering,
@@ -79,10 +79,10 @@ export default function Card() {
   };
 
   return (
-    <div className="card transition duration-300 shadow-xl bg-white/[.7] hover:scale-[1.01] w-2/6 h-5/6 justify-center stack rounded-bl-[100px] rounded-tr-[100px]">
+    <div className="card relative transition duration-300 shadow-xl bg-white/[.7] hover:scale-[1.01] w-2/6 h-5/6 justify-center stack rounded-bl-[100px] rounded-tr-[100px]">
       <div className="grid grid-rows-4 grid-flow-col gap-0 p-4">
         <div
-          className="text-[#420B89] text-xl"
+          className="text-[#420B89] text-xl font-thin italic"
           onMouseEnter={() =>
             setIsHovering((prev) => ({ ...prev, topText1: true }))
           }
@@ -90,7 +90,7 @@ export default function Card() {
           {renderHoverText("topText1")}
         </div>
         <div
-          className="text-[#420B89] text-xl"
+          className="text-[#420B89] text-xl font-thin italic"
           onMouseEnter={() =>
             setIsHovering((prev) => ({ ...prev, topText2: true }))
           }
@@ -99,7 +99,7 @@ export default function Card() {
         </div>
       </div>
 
-      <div className="h-[78%]">
+      <div className="">
         <div className="grid-flow-row flex gap-16 justify-center items-center">
           <ImageLink
             imageSrc="https://www.google.com"
@@ -116,15 +116,13 @@ export default function Card() {
         </div>
       </div>
 
-      <div className="p-4 float-end float-right">
-        <div
-          className="text-[#420B89] text-xl"
-          onMouseEnter={() =>
-            setIsHovering((prev) => ({ ...prev, bottomText: true }))
-          }
-        >
-          {renderHoverText("bottomText")}
-        </div>
+      <div
+        className="absolute text-[#420B89] text-xl font-thin right-0 bottom-0 p-4 italic"
+        onMouseEnter={() =>
+          setIsHovering((prev) => ({ ...prev, bottomText: true }))
+        }
+      >
+        {renderHoverText("bottomText")}
       </div>
     </div>
   );
