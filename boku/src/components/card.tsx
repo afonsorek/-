@@ -4,13 +4,11 @@ import ImageLink from "./link.tsx";
 
 export default function Card() {
   const [hoverText, setHoverText] = useState({
-    topText1: "フラッター",
     topText2: "スウィフト",
     bottomText: "デベロッパー",
   });
 
   const [isHovering, setIsHovering] = useState({
-    topText1: false,
     topText2: false,
     bottomText: false,
   });
@@ -32,12 +30,7 @@ export default function Card() {
         clearInterval(intervalId);
         setHoverText((prevHoverText) => ({
           ...prevHoverText,
-          [key]:
-            key === "topText1"
-              ? "Flutter"
-              : key === "topText2"
-              ? "Swift"
-              : "Developer",
+          [key]: key === "topText2" ? "Swift" : "Developer",
         }));
         setIsHovering((prevIsHovering) => ({
           ...prevIsHovering,
@@ -81,14 +74,6 @@ export default function Card() {
   return (
     <div className="card relative transition duration-300 shadow-xl bg-white/[.7] hover:scale-[1.01] w-2/6 h-5/6 justify-center stack rounded-bl-[100px] rounded-tr-[100px]">
       <div className="grid grid-rows-4 grid-flow-col gap-0 p-4">
-        <div
-          className="text-[#420B89] text-xl font-thin italic"
-          onMouseEnter={() =>
-            setIsHovering((prev) => ({ ...prev, topText1: true }))
-          }
-        >
-          {renderHoverText("topText1")}
-        </div>
         <div
           className="text-[#420B89] text-xl font-thin italic"
           onMouseEnter={() =>
