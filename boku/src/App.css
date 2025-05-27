@@ -13,6 +13,29 @@
   }
 }
 
+.bg-water-animated {
+  background-image: url("./assets/water-texture.png");
+  background-size: cover;
+  animation: waveAnimation 5s ease-in-out infinite;
+  filter: blur(4px);
+  transform: scale(1.05);
+  opacity: 0.8;
+}
+
+@keyframes waveAnimation {
+  0%,
+  100% {
+    transform: scale(1.05) translateX(0);
+    filter: blur(4px);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.07) translateX(10px);
+    filter: blur(5px);
+    opacity: 0.85;
+  }
+}
+
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -35,4 +58,9 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+@font-face {
+  font-family: "DepartureMono";
+  src: url("./fonts/DepartureMono-Regular.otf");
 }

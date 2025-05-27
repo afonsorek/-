@@ -3,6 +3,9 @@ module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
+      fontFamily: {
+        departure: ["DepartureMono", "monospaced"],
+      },
       backgroundImage: {
         "water-texture": "url('./assets/water-texture.png')",
         "card-bg": "url('./assets/card.png')",
@@ -16,4 +19,3 @@ module.exports = {
   },
   plugins: [],
 };
-

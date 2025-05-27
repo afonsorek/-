@@ -1,113 +1,101 @@
 import React, { useState, useEffect } from "react";
-import "./Card.css"; // Import the CSS file for animation
+import "./Card.css";
 import ImageLink from "./link.tsx";
 
 export default function Card() {
-  const [hoverText, setHoverText] = useState({
-    topText2: "スウィフト",
-    bottomText: "デベロッパー",
-  });
-
-  const [isHovering, setIsHovering] = useState({
-    topText2: false,
-    bottomText: false,
-  });
+  const [tiltStyle, setTiltStyle] = useState({});
+  const [dateTime, setDateTime] = useState(new Date());
+  const [showColon, setShowColon] = useState(true);
 
   useEffect(() => {
-    const hoveringKeys = Object.keys(isHovering).filter(
-      (key) => isHovering[key]
-    );
+    const interval = setInterval(() => {
+      setDateTime(new Date());
+      setShowColon((prev) => !prev);
+    }, 1000);
 
-    const hoverEffect = (key) => {
-      const intervalId = setInterval(() => {
-        setHoverText((prevHoverText) => ({
-          ...prevHoverText,
-          [key]: generateRandomText(prevHoverText[key].length),
-        }));
-      }, 50);
+    return () => clearInterval(interval);
+  }, []);
 
-      const timeoutId = setTimeout(() => {
-        clearInterval(intervalId);
-        setHoverText((prevHoverText) => ({
-          ...prevHoverText,
-          [key]: key === "topText2" ? "Swift" : "Developer",
-        }));
-        setIsHovering((prevIsHovering) => ({
-          ...prevIsHovering,
-          [key]: false,
-        }));
-      }, 400);
+  const handleMouseMove = (e) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
 
-      return { intervalId, timeoutId };
-    };
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
 
-    const effectCleanups = hoveringKeys.map((key) => hoverEffect(key));
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
 
-    return () => {
-      effectCleanups.forEach(({ intervalId, timeoutId }) => {
-        clearInterval(intervalId);
-        clearTimeout(timeoutId);
-      });
-    };
-  }, [isHovering]);
+    const deltaX = (x - centerX) / centerX;
+    const deltaY = (y - centerY) / centerY;
 
-  const generateRandomText = (length) => {
-    const characters =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZ田由甲申甴电甶男甸甹町画甼甽甾甿畀畁畂畃畄畅畆畇畈畉畊畋界畍畎畏畐畑";
-    let result = "";
-    for (let i = 0; i < length; i++) {
-      result += characters.charAt(
-        Math.floor(Math.random() * characters.length)
-      );
-    }
-    return result;
+    const rotateX = deltaY * 8;
+    const rotateY = deltaX * -8;
+
+    const shadowX = deltaX * 20;
+    const shadowY = deltaY * 20;
+
+    setTiltStyle({
+      transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.03)`,
+      boxShadow: `${-shadowX}px ${-shadowY}px 30px rgba(0, 0, 0, 0.3)`,
+      transition: "transform 0.1s ease, box-shadow 0.1s ease",
+    });
   };
 
-  const renderHoverText = (textKey) => {
-    return hoverText[textKey].split("").map((char, index) => (
-      <span key={index} className="fade-letter">
-        {char}
-      </span>
-    ));
+  const handleMouseLeave = () => {
+    setTiltStyle({
+      transform: "rotateX(0deg) rotateY(0deg) scale(1)",
+      boxShadow: `0px 10px 30px rgba(0, 0, 0, 0.15)`,
+      transition: "transform 0.3s ease, box-shadow 0.3s ease",
+    });
+  };
+
+  const formatTime = (date) => {
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? "PM" : "AM";
+
+    hours = hours % 12;
+    hours = hours ? hours : 12; // 0 -> 12
+
+    const strHours = hours < 10 ? `0${hours}` : `${hours}`;
+    const strMinutes = minutes < 10 ? `0${minutes}` : `${minutes}`;
+
+    return `${strHours}${showColon ? ":" : " "}${strMinutes} ${ampm}`;
   };
 
   return (
-    <div className="card relative transition duration-300 shadow-xl bg-white/[.7] hover:scale-[1.01] w-2/6 h-5/6 justify-center stack rounded-bl-[100px] rounded-tr-[100px]">
+    <div
+      className="card relative transition duration-300 shadow-xl bg-white/[.6] w-full max-w-2xl aspect-[4/6] justify-center stack rounded-bl-[100px] rounded-tr-[100px] font-departure"
+      style={tiltStyle}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
       <div className="grid grid-rows-4 grid-flow-col gap-0 p-4">
-        <div
-          className="text-[#420B89] text-xl font-thin italic"
-          onMouseEnter={() =>
-            setIsHovering((prev) => ({ ...prev, topText2: true }))
-          }
-        >
-          {renderHoverText("topText2")}
+        <div className="text-[#420B89]/[1.0] text-xl font-departure">
+          {`Now @Brasil | ${formatTime(dateTime)} | -3GMT`}
         </div>
       </div>
 
-      <div className="">
-        <div className="grid-flow-row flex gap-16 justify-center items-center">
+      <div>
+        <div className="grid-flow-row flex gap-12 justify-center items-center">
           <ImageLink
-            imageSrc="https://www.google.com"
-            link="https://www.google.com"
+            imageSrc={require("../assets/git.png")}
+            link="https://www.github.com/afonsorek"
           />
           <ImageLink
-            imageSrc="https://www.google.com"
-            link="https://www.google.com"
+            imageSrc={require("../assets/linkedin.png")}
+            link="https://www.linkedin.com/in/afonsorek"
           />
           <ImageLink
-            imageSrc="https://www.google.com"
-            link="https://www.google.com"
+            imageSrc={require("../assets/instagram.png")}
+            link="https://www.instagram.com/afonso.wav"
           />
         </div>
       </div>
 
-      <div
-        className="absolute text-[#420B89] text-xl font-thin right-0 bottom-0 p-4 italic"
-        onMouseEnter={() =>
-          setIsHovering((prev) => ({ ...prev, bottomText: true }))
-        }
-      >
-        {renderHoverText("bottomText")}
+      <div className="absolute text-[#420B89]/[1.0] text-xl font-departure right-0 bottom-0 p-4">
+        afonsoRek@2025
       </div>
     </div>
   );
