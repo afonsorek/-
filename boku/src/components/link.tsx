@@ -3,9 +3,16 @@ import React, { useState } from "react";
 interface ImageLinkProps {
   imageSrc: string; // URL or path to the image
   link: string; // Destination URL for the link
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }
 
-const ImageLink: React.FC<ImageLinkProps> = ({ imageSrc, link }) => {
+const ImageLink: React.FC<ImageLinkProps> = ({
+  imageSrc,
+  link,
+  onMouseEnter,
+  onMouseLeave,
+}) => {
   const [tiltStyle, setTiltStyle] = useState({});
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -34,12 +41,15 @@ const ImageLink: React.FC<ImageLinkProps> = ({ imageSrc, link }) => {
     });
   };
 
-  const handleMouseLeave = () => {
+  const internalHandleMouseLeave = () => {
     setTiltStyle({
       transform: "rotateX(0deg) rotateY(0deg) scale(1.0)",
       boxShadow: `0px 5px 15px rgba(0, 0, 0, 0.15)`,
       transition: "transform 0.3s ease, box-shadow 0.3s ease",
     });
+    if (onMouseLeave) {
+      onMouseLeave();
+    }
   };
 
   return (
@@ -47,7 +57,8 @@ const ImageLink: React.FC<ImageLinkProps> = ({ imageSrc, link }) => {
       className="relative w-40 h-40 cursor-pointer rounded-bl-[32px] rounded-tr-[32px] overflow-hidden"
       style={tiltStyle}
       onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={internalHandleMouseLeave}
     >
       {/* Background Shape */}
       <div className="absolute top-0 left-0 w-full h-full bg-white opacity-40 rounded-bl-[32px] rounded-tr-[32px]"></div>
@@ -58,7 +69,9 @@ const ImageLink: React.FC<ImageLinkProps> = ({ imageSrc, link }) => {
           <img
             src={imageSrc}
             alt="Icon"
-            className="w-full h-full object-cover opacity-100 scale-[.7]"
+            className="w-full h-full object-cover opacity-100 scale-[.6]"
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
           />
         </a>
       </div>
