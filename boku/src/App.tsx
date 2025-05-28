@@ -134,18 +134,21 @@ export default function App() {
   return (
     // Assuming font-departure is globally defined or replace with a fallback like font-['Arial']
     <div className="h-screen bg-gradient-to-b from-purple-400 to-violet-700 font-['Arial']">
-      {/* Main flex container: MODIFIED for conditional justification */}
+      {/* Main flex container: MODIFIED for conditional justification and transition */}
       <div
         className={`min-h-screen bg-cover bg-water-texture flex flex-col md:flex-row items-center ${
           isProjectsView ? "md:justify-start" : "md:justify-center"
-        } p-4 md:p-8 font-['Arial'] overflow-hidden relative transition-all duration-700 ease-in-out`}
+        } p-4 md:p-8 font-['Arial'] overflow-hidden relative`}
+
+        // {/* MODIFIED: duration and easing */}
       >
         {/* Main Card Area (container for the Card component) */}
         <div
-          className={`transition-all duration-700 ease-in-out ${
+          className={`transition-all duration-700 ease-out ${
+            /* MODIFIED: duration and easing */
             isProjectsView
               ? "w-full md:w-[35%] lg:w-[30%] flex-shrink-0" // Card area shrinks when projects are viewed
-              : "w-full max-w-xl md:max-w-2xl lg:max-w-3xl" // Card area is larger and centered initially
+              : "w-full max-w-xl md:max-w-2xl lg:max-w-2xl" // Card area is larger and centered initially
           }`}
         >
           <Card
@@ -156,13 +159,13 @@ export default function App() {
 
         {/* Projects Bay Area: MODIFIED for better stacking and animation */}
         <div
-          className={`projects-bay w-full transition-all duration-700 ease-in-out transform 
-            ${
-              isProjectsView
-                ? "opacity-100 translate-x-0 h-auto md:w-[65%] lg:w-[70%] md:h-full md:flex-shrink-0" // Visible, takes space
-                : "opacity-0 translate-x-full pointer-events-none max-h-0 md:max-h-full md:w-0" // Hidden, no layout space
-            } 
-            flex items-center justify-center`} // Removed padding, inner div handles it
+          className={`projects-bay w-full transition-all duration-700 ease-out ${
+            /* MODIFIED: duration, easing and removed redundant 'transform' keyword */
+            isProjectsView
+              ? "opacity-100 translate-x-0 h-auto md:w-[65%] lg:w-[70%] md:h-full md:flex-shrink-0" // Visible, takes space
+              : "opacity-0 translate-x-full pointer-events-none max-h-0 md:max-h-full md:w-0" // Hidden, no layout space
+          } 
+            flex items-center justify-center`}
         >
           {/* Scrollable content area within Projects Bay */}
           <div className="w-full h-full max-h-[calc(100vh-2rem)] md:max-h-full overflow-y-auto scrollbar-thin p-4 md:p-6">

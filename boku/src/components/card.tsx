@@ -26,7 +26,8 @@ const ChevronRightIcon = ({ className = "w-6 h-6" }) => (
   </svg>
 );
 
-const BriefcaseIcon = ({ className = "w-6 h-6" }) => (
+// Helper: SVG Icons (using Heroicons-like style for simplicity)
+const ChevronLeftIcon = ({ className = "w-6 h-6" }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     fill="none"
@@ -38,24 +39,7 @@ const BriefcaseIcon = ({ className = "w-6 h-6" }) => (
     <path
       strokeLinecap="round"
       strokeLinejoin="round"
-      d="M20.25 14.15v4.073a2.25 2.25 0 01-2.25 2.25h-12a2.25 2.25 0 01-2.25-2.25V14.15M16.5 18.75h.008v.008h-.008v-.008zm-3 0h.008v.008h-.008v-.008zm-3 0h.008v.008h-.008v-.008zm-3 0h.008v.008h-.008v-.008zM12 9.75L14.25 12m0 0l2.25 2.25M14.25 12l2.25-2.25M14.25 12L12 14.25m-2.58 4.92l-6.375-6.375a1.125 1.125 0 010-1.59L9.42 4.83c.211-.211.498-.33.796-.33H19.5a2.25 2.25 0 012.25 2.25v10.5a2.25 2.25-"
-    />
-  </svg>
-);
-
-const ArrowLeftIcon = ({ className = "w-6 h-6" }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={1.5}
-    stroke="currentColor"
-    className={className}
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+      d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"
     />
   </svg>
 );
@@ -176,10 +160,10 @@ export default function Card({
   return (
     // Main container for the card and its tooltip
     <div
-      className={`relative flex items-start transition-all duration-700 ease-in-out ${
+      className={`relative flex transition-all duration-700 ease-in-out ${
         isProjectsView
-          ? "w-full md:w-[35%] lg:w-[30%]"
-          : "w-full max-w-xl md:max-w-2xl lg:max-w-3xl" // Increased card width
+          ? "w-56 items-center justify-center h-72" // Use h-72 (standard scale, 18rem / 288px)
+          : "w-full max-w-xl md:max-w-2xl lg:max-w-3xl items-start"
       }`}
     >
       {/* Enhanced Tooltip OUTSIDE the card */}
@@ -210,7 +194,7 @@ export default function Card({
                    font-departure rounded-bl-[100px] rounded-tr-[100px]
                    ${
                      isProjectsView
-                       ? "aspect-auto min-h-[calc(100vh-4rem)] overflow-y-auto"
+                       ? "max-w-56"
                        : "aspect-[5/7] md:aspect-[4/6]" // Adjusted aspect ratio for bigger card
                    }`}
         style={
@@ -229,15 +213,27 @@ export default function Card({
       >
         {/* MODIFIED BUTTON */}
         <button
-          onClick={toggleProjectsView}
+          onClick={() => {
+            toggleProjectsView();
+            setHoverData(null);
+          }}
           className="absolute z-20 flex items-center justify-center w-24 h-24 rounded-full bg-white/[.65] backdrop-blur-sm text-[#420B89] hover:bg-white/[.90] hover:backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-[#420B89]/50 transition-all duration-300 ease-in-out shadow-xl"
           style={{ top: "-10px", right: "-20px" }} // Positioned to be centered on the card's TR corner
           aria-label={isProjectsView ? "Back to main card" : "View projects"}
+          onMouseEnter={() =>
+            setHoverData({
+              title: isProjectsView ? "Go back to card" : "See my overview",
+              description: isProjectsView
+                ? "Go to windows view"
+                : "See my projects",
+            })
+          }
+          onFocus={() => setHoverData(null)}
         >
           {isProjectsView ? (
-            <ArrowLeftIcon className="w-6 h-6 md:w-8 md:h-8" /> // Slightly larger icon for larger button
+            <ChevronRightIcon className="w-6 h-6 md:w-8 md:h-8" /> // Slightly larger icon for larger button
           ) : (
-            <BriefcaseIcon className="w-6 h-6 md:w-8 md:h-8" /> // Slightly larger icon
+            <ChevronLeftIcon className="w-6 h-6 md:w-8 md:h-8" /> // Slightly larger icon
           )}
         </button>
 
@@ -247,109 +243,118 @@ export default function Card({
             isProjectsView ? "items-start" : "items-center justify-between" // Use justify-between for normal view
           }`}
         >
-          {/* Top section: Time */}
-          <div
-            className={`w-full text-center md:text-left mb-1 md:mb-2 transition-all duration-300 ${
-              isProjectsView
-                ? "opacity-70 text-sm"
-                : "opacity-100 text-lg md:text-xl"
-            }`}
-          >
-            <p className="text-[#420B89]/[1.0]">
-              {`Now @Brasil | ${formatTime(dateTime)} | GMT-3`}
-            </p>
-          </div>
+          {!isProjectsView ? (
+            <>
+              {/* --- NORMAL VIEW (isProjectsView is false) --- */}
+              {/* Top section: Time */}
+              <div className="w-full text-center md:text-left mb-1 md:mb-2 text-lg md:text-xl opacity-100 transition-opacity duration-300">
+                <p className="text-[#420B89]/[1.0]">
+                  {`Now @Brasil | ${formatTime(dateTime)} | GMT-3`}
+                </p>
+              </div>
 
-          {/* Main content area (Polaroid, About Me, Links) - hidden when projects view is active */}
-          <div
-            className={`w-full flex flex-col items-center justify-center flex-grow transition-all duration-500 ease-in-out ${
-              isProjectsView
-                ? "opacity-0 max-h-0 overflow-hidden pointer-events-none"
-                : "opacity-100 max-h-[1000px]"
-            }`}
-          >
-            <PolaroidImage
-              imageUrl="https://placehold.co/300x350/E0E0F0/A0A0C0?text=Afonso+Rek" // Slightly larger placeholder
-              caption="Afonso Rek - Developer"
-              altText="Afonso Rek's polaroid style photo"
-              onMouseEnter={() =>
-                setHoverData({
-                  title: "About Me!",
-                  description:
-                    "Hello, I'm Afonso. I'm a passionate developer creating cool things.",
-                })
-              }
-              onMouseLeave={() => setHoverData(null)}
-            />
-            {/* Removed the separate "About Me" text section as Polaroid can trigger its own tooltip */}
-          </div>
+              {/* Main content area (Polaroid) */}
+              <div className="w-full flex flex-col items-center justify-center flex-grow opacity-100 max-h-[1000px] transition-opacity duration-500 ease-in-out">
+                <PolaroidImage
+                  imageUrl="https://placehold.co/300x350/E0E0F0/A0A0C0?text=Afonso+Rek"
+                  caption="Afonso Rek - Developer"
+                  altText="Afonso Rek's polaroid style photo"
+                  onMouseEnter={() =>
+                    setHoverData({
+                      title: "About Me!",
+                      description:
+                        "Hello, I'm Afonso. I'm a passionate developer creating cool things.",
+                    })
+                  }
+                  onMouseLeave={() => setHoverData(null)}
+                />
+              </div>
 
-          {/* Image Links - Placed at the bottom in normal view */}
-          <div
-            className={`w-full flex justify-center items-center gap-6 md:gap-16 py-4 transition-all duration-500 ease-in-out ${
-              isProjectsView
-                ? "opacity-0 max-h-0 overflow-hidden pointer-events-none"
-                : "opacity-100"
-            }`}
-          >
-            <ImageLink
-              imageSrc={require("../assets/git.png")}
-              link="https://www.github.com/afonsorek"
-              onMouseEnter={() =>
-                setHoverData({ title: "Gitas", description: "aloo" })
-              }
-              onMouseLeave={() => setHoverData(null)}
-            />
+              {/* Image Links for NORMAL view */}
+              <div className="w-full flex justify-center items-center gap-6 md:gap-16 py-4 opacity-100 transition-opacity duration-500 ease-in-out">
+                <ImageLink
+                  imageSrc={require("../assets/git.png")}
+                  link="https://www.github.com/afonsorek"
+                  onMouseEnter={() =>
+                    setHoverData({
+                      title: "GitHub Profile",
+                      description: "Explore my code and projects.",
+                    })
+                  }
+                  onMouseLeave={() => setHoverData(null)}
+                />
+                <ImageLink
+                  imageSrc={require("../assets/linkedin.png")}
+                  link="https://www.linkedin.com/in/afonsorek"
+                  onMouseEnter={() =>
+                    setHoverData({
+                      title: "LinkedIn Profile",
+                      description: "Connect with me professionally.",
+                    })
+                  }
+                  onMouseLeave={() => setHoverData(null)}
+                />
+                <ImageLink
+                  imageSrc={require("../assets/instagram.png")}
+                  link="https://www.instagram.com/afonso.wav"
+                  onMouseEnter={() =>
+                    setHoverData({
+                      title: "Instagram",
+                      description: "Follow my visual stories.",
+                    })
+                  }
+                  onMouseLeave={() => setHoverData(null)}
+                />
+              </div>
 
-            <ImageLink
-              imageSrc={require("../assets/linkedin.png")}
-              link="https://www.linkedin.com/in/afonsorek"
-              onMouseEnter={() =>
-                setHoverData({ title: "Gitas", description: "aloo" })
-              }
-              onMouseLeave={() => setHoverData(null)}
-            />
-
-            <ImageLink
-              imageSrc={require("../assets/instagram.png")}
-              link="https://www.instagram.com/afonso.wav"
-              onMouseEnter={() =>
-                setHoverData({ title: "Gitas", description: "aloo" })
-              }
-              onMouseLeave={() => setHoverData(null)}
-            />
-          </div>
-
-          {/* Content visible when card IS collapsed (minimal info) */}
-          <div
-            className={`w-full transition-all duration-500 ease-in-out ${
-              !isProjectsView
-                ? "opacity-0 max-h-0 overflow-hidden pointer-events-none"
-                : "opacity-100 max-h-[1000px] mt-12"
-            }`}
-          >
-            <h1 className="text-2xl md:text-3xl font-bold text-[#420B89] mb-2">
-              Afonso Rek
-            </h1>
-            <p className="text-sm md:text-base text-gray-700 font-sans mb-4">
-              Software Developer
-            </p>
-            <p className="text-xs text-gray-500 font-sans">
-              Explore my projects on the right, or click the arrow to go back to
-              my main card.
-            </p>
-          </div>
-
-          {/* Bottom section: Signature */}
-          <div
-            className={`w-full text-center md:text-right pt-2 md:pt-4 transition-all duration-300 ${
-              isProjectsView
-                ? "opacity-70 text-xs mt-auto" // Ensure it's at bottom in project view
-                : "opacity-100 text-base md:text-lg"
-            }`}
-          >
-            <p className="text-[#420B89]/[1.0]">afonsoRek@2025</p>
-          </div>
+              {/* Bottom section: Signature */}
+              <div className="w-full text-center md:text-right pt-2 md:pt-4 text-base md:text-lg opacity-100 transition-opacity duration-300">
+                <p className="text-[#420B89]/[1.0]">afonsoRek@2025</p>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* --- COLLAPSED VIEW (isProjectsView is true) --- */}
+              {/* Only Image Links, vertically stacked and centered */}
+              <div className="flex flex-col items-center justify-center gap-6 py-4">
+                {" "}
+                {/* Increased gap for vertical stack */}
+                <ImageLink
+                  imageSrc={require("../assets/git.png")}
+                  link="https://www.github.com/afonsorek"
+                  onMouseEnter={() =>
+                    setHoverData({
+                      title: "GitHub Profile",
+                      description: "Explore my code and projects.",
+                    })
+                  }
+                  onMouseLeave={() => setHoverData(null)}
+                />
+                <ImageLink
+                  imageSrc={require("../assets/linkedin.png")}
+                  link="https://www.linkedin.com/in/afonsorek"
+                  onMouseEnter={() =>
+                    setHoverData({
+                      title: "LinkedIn Profile",
+                      description: "Connect with me professionally.",
+                    })
+                  }
+                  onMouseLeave={() => setHoverData(null)}
+                />
+                <ImageLink
+                  imageSrc={require("../assets/instagram.png")}
+                  link="https://www.instagram.com/afonso.wav"
+                  onMouseEnter={() =>
+                    setHoverData({
+                      title: "Instagram",
+                      description: "Follow my visual stories.",
+                    })
+                  }
+                  onMouseLeave={() => setHoverData(null)}
+                />
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
