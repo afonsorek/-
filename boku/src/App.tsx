@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Card from "./components/card.tsx"; // Assuming card.tsx is in ./components/
-import "./App.css"; // Assuming your App.css and font-departure are set up
+import RealisticWaveBackground from "./components/RealisticWaveBackground.tsx"; // Import the new background
+import "./App.css";
 
-// Component: ProjectWindow (no changes needed to this component)
+// Component: ProjectWindow (Keep your existing version)
 const ProjectWindow = ({
   title,
   description,
@@ -28,7 +29,6 @@ const ProjectWindow = ({
     <div
       className="bg-white/80 backdrop-blur-md shadow-2xl rounded-lg overflow-hidden w-full max-w-md transition-all duration-500 ease-out hover:shadow-3xl project-window-item"
       style={{
-        // animationDelay: `${index * 100}ms`, // Initial animation properties
         opacity: 0, // Initial state for JS-driven animation
         transform: "translateY(20px)", // Initial state for JS-driven animation
       }}
@@ -62,7 +62,6 @@ const ProjectWindow = ({
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block bg-[#420B89] text-white text-xs font-['Arial'] px-4 py-2 rounded-md hover:bg-opacity-80 transition-colors"
-            // Assuming font-departure is available or use a fallback like font-['Arial']
           >
             View Project
           </a>
@@ -115,40 +114,38 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    // This effect handles the staggered animation for project windows when they become visible.
     if (isProjectsView) {
       const projectWindows = document.querySelectorAll(".project-window-item");
       projectWindows.forEach((windowEl, index) => {
         const htmlWindowEl = windowEl as HTMLElement;
-        // Reset styles for re-triggering animation if view is toggled multiple times
         htmlWindowEl.style.opacity = "0";
         htmlWindowEl.style.transform = "translateY(20px)";
         setTimeout(() => {
           htmlWindowEl.style.opacity = "1";
           htmlWindowEl.style.transform = "translateY(0px)";
-        }, 50 + index * 100); // Staggered delay
+        }, 50 + index * 100);
       });
     }
-  }, [isProjectsView, projects]); // Rerun when isProjectsView or projects list changes
+  }, [isProjectsView, projects]);
 
   return (
-    // Assuming font-departure is globally defined or replace with a fallback like font-['Arial']
-    <div className="h-screen bg-gradient-to-b from-purple-400 to-violet-700 font-['Arial']">
-      {/* Main flex container: MODIFIED for conditional justification and transition */}
-      <div
-        className={`min-h-screen bg-cover bg-water-texture flex flex-col md:flex-row items-center ${
-          isProjectsView ? "md:justify-start" : "md:justify-center"
-        } p-4 md:p-8 font-['Arial'] overflow-hidden relative`}
+    // Removed gradient from here, added relative positioning
+    <div className="h-screen font-['Arial'] relative">
+      {/* WebGL Background is now handling the visual background */}
+      <RealisticWaveBackground />
 
-        // {/* MODIFIED: duration and easing */}
+      {/* Main Content Area - Added 'main-content' class and ensures it's on top */}
+      <div
+        className={`main-content min-h-screen flex flex-col md:flex-row items-center ${
+          isProjectsView ? "md:justify-start" : "md:justify-center"
+        } p-4 md:p-8 font-['Arial'] overflow-hidden`}
       >
-        {/* Main Card Area (container for the Card component) */}
+        {/* Main Card Area */}
         <div
           className={`transition-all duration-700 ease-out ${
-            /* MODIFIED: duration and easing */
             isProjectsView
-              ? "w-full md:w-[35%] lg:w-[30%] flex-shrink-0" // Card area shrinks when projects are viewed
-              : "w-full max-w-xl md:max-w-2xl lg:max-w-2xl" // Card area is larger and centered initially
+              ? "w-full md:w-[35%] lg:w-[30%] flex-shrink-0"
+              : "w-full max-w-xl md:max-w-2xl lg:max-w-2xl"
           }`}
         >
           <Card
@@ -157,25 +154,21 @@ export default function App() {
           />
         </div>
 
-        {/* Projects Bay Area: MODIFIED for better stacking and animation */}
+        {/* Projects Bay Area */}
         <div
           className={`projects-bay w-full transition-all duration-700 ease-out ${
-            /* MODIFIED: duration, easing and removed redundant 'transform' keyword */
             isProjectsView
-              ? "opacity-100 translate-x-0 h-auto md:w-[65%] lg:w-[70%] md:h-full md:flex-shrink-0" // Visible, takes space
-              : "opacity-0 translate-x-full pointer-events-none max-h-0 md:max-h-full md:w-0" // Hidden, no layout space
-          } 
-            flex items-center justify-center`}
+              ? "opacity-100 translate-x-0 h-auto md:w-[65%] lg:w-[70%] md:h-full md:flex-shrink-0"
+              : "opacity-0 translate-x-full pointer-events-none max-h-0 md:max-h-full md:w-0"
+          } flex items-center justify-center`}
         >
-          {/* Scrollable content area within Projects Bay */}
           <div className="w-full h-full max-h-[calc(100vh-2rem)] md:max-h-full overflow-y-auto scrollbar-thin p-4 md:p-6">
-            {/* Render projects only when isProjectsView is true to ensure animations trigger correctly */}
             {isProjectsView && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 place-items-center">
                 {projects.map((project, index) => (
                   <ProjectWindow
                     key={project.id}
-                    index={index} // Used for animation delay in original code, now handled by useEffect
+                    index={index}
                     title={project.title}
                     description={project.description}
                     imageUrl={project.imageUrl}
