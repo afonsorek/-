@@ -1,6 +1,9 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
+// Assuming Card.css contains necessary base styles and font-departure
 import "./Card.css";
+// Assuming ImageLink.tsx is in the same directory or path is adjusted
 import ImageLink from "./link.tsx";
+import PolaroidImage from "./PolaroidImage.tsx";
 
 // Interface for Hover Data
 interface HoverData {
@@ -8,7 +11,7 @@ interface HoverData {
   description: string;
 }
 
-// Helper: SVG Icons (using Heroicons-like style for simplicity)
+// Helper: SVG Icons
 const ChevronRightIcon = ({ className = "w-6 h-6" }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -26,7 +29,6 @@ const ChevronRightIcon = ({ className = "w-6 h-6" }) => (
   </svg>
 );
 
-// Helper: SVG Icons (using Heroicons-like style for simplicity)
 const ChevronLeftIcon = ({ className = "w-6 h-6" }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -36,6 +38,7 @@ const ChevronLeftIcon = ({ className = "w-6 h-6" }) => (
     stroke="currentColor"
     className={className}
   >
+    {/* Using the corrected path for ChevronLeftIcon from your code */}
     <path
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -44,51 +47,6 @@ const ChevronLeftIcon = ({ className = "w-6 h-6" }) => (
   </svg>
 );
 
-// Component: PolaroidImage (User's version with slight modifications for consistency)
-const PolaroidImage = ({
-  imageUrl,
-  caption,
-  altText = "Polaroid image",
-  onMouseEnter,
-  onMouseLeave,
-}: {
-  imageUrl: string;
-  caption?: string;
-  altText?: string;
-  onMouseEnter?: () => void;
-  onMouseLeave?: () => void;
-}) => {
-  return (
-    <div
-      className="p-3 bg-white shadow-xl transform -rotate-3 hover:rotate-0 transition-transform duration-200 ease-in-out rounded-md w-60 md:w-72 lg:w-80 mx-auto my-6" // Increased my margin
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-    >
-      <div className="w-full h-52 md:h-64 lg:h-72 bg-gray-200 overflow-hidden rounded-sm">
-        {" "}
-        {/* Adjusted height slightly */}
-        <img
-          src={imageUrl}
-          alt={altText}
-          className="w-full h-full object-cover"
-          onError={(e) => {
-            const imgTarget = e.target as HTMLImageElement;
-            imgTarget.onerror = null;
-            imgTarget.src = `https://placehold.co/280x320/EAEAEA/BDBDBD?text=Profile+Error`; // Adjusted placeholder size
-          }}
-        />
-      </div>
-      {caption && (
-        <p className="mt-3 text-center text-md text-gray-700 font-departure">
-          {" "}
-          {/* Increased mt and text size */}
-          {caption}
-        </p>
-      )}
-    </div>
-  );
-};
-
 export default function Card({
   isProjectsView,
   toggleProjectsView,
@@ -96,11 +54,9 @@ export default function Card({
   isProjectsView: boolean;
   toggleProjectsView: () => void;
 }) {
-  // Added types for props
-  const [tiltStyle, setTiltStyle] = useState<React.CSSProperties>({}); // Added type for tiltStyle
+  const [tiltStyle, setTiltStyle] = useState<React.CSSProperties>({});
   const [dateTime, setDateTime] = useState(new Date());
   const [showColon, setShowColon] = useState(true);
-
   const [hoverData, setHoverData] = useState<HoverData | null>(null);
 
   useEffect(() => {
@@ -108,12 +64,10 @@ export default function Card({
       setDateTime(new Date());
       setShowColon((prev) => !prev);
     }, 1000);
-
     return () => clearInterval(interval);
   }, []);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    // Added type for event
     if (isProjectsView) return;
     const card = e.currentTarget;
     const rect = card.getBoundingClientRect();
@@ -144,37 +98,34 @@ export default function Card({
     });
   };
 
-  const formatTime = (date) => {
+  const formatTime = (date: Date): string => {
+    // Added type for date
     let hours = date.getHours();
     const minutes = date.getMinutes();
     const ampm = hours >= 12 ? "PM" : "AM";
-
     hours = hours % 12 || 12;
-
     const strHours = hours < 10 ? `0${hours}` : `${hours}`;
     const strMinutes = minutes < 10 ? `0${minutes}` : `${minutes}`;
-
     return `${strHours}${showColon ? ":" : " "}${strMinutes} ${ampm}`;
   };
 
   return (
-    // Main container for the card and its tooltip
+    // Main container for the card and its tooltip - Preserving user's classes
     <div
       className={`relative flex transition-all duration-700 ease-in-out ${
         isProjectsView
-          ? "w-56 items-center justify-center h-72" // Use h-72 (standard scale, 18rem / 288px)
-          : "w-full max-w-xl md:max-w-2xl lg:max-w-3xl items-start"
+          ? "w-56 items-center justify-center h-72"
+          : "w-full max-w-xl md:max-w-2xl lg:max-w-3xl items-start justify-center" // Added justify-center to center the card itself
       }`}
     >
-      {/* Enhanced Tooltip OUTSIDE the card */}
+      {/* Enhanced Tooltip OUTSIDE the card - Preserving user's classes */}
       <div
         className={`absolute left-full ml-4 top-1/4 text-[#420B89] font-departure transition-all duration-300 ease-in-out transform z-50
-                   bg-white/70 backdrop-blur-md shadow-lg rounded-lg p-4 w-64 ${
-                     // Made tooltip wider
-                     hoverData
-                       ? "opacity-100 translate-x-0"
-                       : "opacity-0 -translate-x-4 pointer-events-none"
-                   }`}
+                    bg-white/70 backdrop-blur-md shadow-lg rounded-lg p-4 w-64 ${
+                      hoverData
+                        ? "opacity-100 translate-x-0"
+                        : "opacity-0 -translate-x-4 pointer-events-none"
+                    }`}
       >
         {hoverData && (
           <>
@@ -188,15 +139,15 @@ export default function Card({
         )}
       </div>
 
-      {/* The Card itself */}
+      {/* The Card itself - Preserving user's classes for aspect ratio and general style */}
       <div
         className={`card relative transition-all duration-700 ease-in-out shadow-xl bg-white/[.65] backdrop-blur-sm w-full 
-                   font-departure rounded-bl-[100px] rounded-tr-[100px]
-                   ${
-                     isProjectsView
-                       ? "max-w-56"
-                       : "aspect-[5/7] md:aspect-[4/6]" // Adjusted aspect ratio for bigger card
-                   }`}
+                    font-departure rounded-bl-[100px] rounded-tr-[100px]
+                    ${
+                      isProjectsView
+                        ? "max-w-56" // Collapsed view
+                        : "aspect-[5/7] md:aspect-[4/6]" // Normal view - CRITICAL FOR PROPORTIONS
+                    }`}
         style={
           isProjectsView
             ? {
@@ -208,17 +159,17 @@ export default function Card({
         onMouseMove={handleMouseMove}
         onMouseLeave={() => {
           handleMouseLeave();
-          setHoverData(null); // Clear hover data on card mouse leave
+          setHoverData(null);
         }}
       >
-        {/* MODIFIED BUTTON */}
+        {/* Toggle Button - Preserving user's classes */}
         <button
           onClick={() => {
             toggleProjectsView();
             setHoverData(null);
           }}
-          className="absolute z-20 flex items-center justify-center w-24 h-24 rounded-full bg-white/[.65] backdrop-blur-sm text-[#420B89] hover:bg-white/[.90] hover:backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-[#420B89]/50 transition-all duration-300 ease-in-out shadow-xl"
-          style={{ top: "-10px", right: "-20px" }} // Positioned to be centered on the card's TR corner
+          className="absolute z-40 flex items-center justify-center w-24 h-24 rounded-full bg-white/[.65] backdrop-blur-sm text-[#420B89] hover:bg-white/[.90] hover:backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-[#420B89]/50 transition-all duration-300 ease-in-out shadow-xl"
+          style={{ top: "-10px", right: "-20px" }}
           aria-label={isProjectsView ? "Back to main card" : "View projects"}
           onMouseEnter={() =>
             setHoverData({
@@ -228,50 +179,84 @@ export default function Card({
                 : "See my projects",
             })
           }
+          onMouseLeave={() => setHoverData(null)} // Ensure tooltip clears when mouse leaves button
           onFocus={() => setHoverData(null)}
         >
           {isProjectsView ? (
-            <ChevronRightIcon className="w-6 h-6 md:w-8 md:h-8" /> // Slightly larger icon for larger button
+            <ChevronRightIcon className="w-6 h-6 md:w-8 md:h-8" />
           ) : (
-            <ChevronLeftIcon className="w-6 h-6 md:w-8 md:h-8" /> // Slightly larger icon
+            <ChevronLeftIcon className="w-6 h-6 md:w-8 md:h-8" />
           )}
         </button>
 
-        {/* Inner content of the card */}
+        {/* Inner content of the card - Preserving user's flex structure */}
         <div
           className={`flex flex-col h-full p-4 md:p-6 transition-opacity duration-500 ${
-            isProjectsView ? "items-start" : "items-center justify-between" // Use justify-between for normal view
+            isProjectsView
+              ? "items-center justify-center"
+              : "items-center justify-between" // Adjusted for collapsed view
           }`}
         >
           {!isProjectsView ? (
             <>
               {/* --- NORMAL VIEW (isProjectsView is false) --- */}
-              {/* Top section: Time */}
-              <div className="w-full text-center md:text-left mb-1 md:mb-2 text-lg md:text-xl opacity-100 transition-opacity duration-300">
+              {/* Top section: Time - Preserving user's classes */}
+              <div className="w-full text-center md:text-left mb-1 md:mb-2 text-lg md:text-xl opacity-100 transition-opacity duration-300 z-10">
                 <p className="text-[#420B89]/[1.0]">
                   {`Now @Brasil | ${formatTime(dateTime)} | GMT-3`}
                 </p>
               </div>
 
-              {/* Main content area (Polaroid) */}
-              <div className="w-full flex flex-col items-center justify-center flex-grow opacity-100 max-h-[1000px] transition-opacity duration-500 ease-in-out">
+              {/* Main content area (Polaroid Spread) - This is the key modification area */}
+              <div className="w-full flex-grow relative flex items-center justify-center opacity-100 my-2 md:my-4">
+                {/* Polaroids are absolutely positioned within this relative container */}
+                {/* Adjust top/left/right/bottom and translate values to spread them */}
                 <PolaroidImage
-                  imageUrl="https://placehold.co/300x350/E0E0F0/A0A0C0?text=Afonso+Rek"
-                  caption="Afonso Rek - Developer"
-                  altText="Afonso Rek's polaroid style photo"
+                  imageUrl="https://placehold.co/144x128/A7C7E7/333333?text=Skill+1"
+                  caption="UI/UX Design"
+                  altText="UI/UX Design Polaroid"
+                  tilt={-8}
+                  positioningClasses="top-[10%] left-[10%] md:top-[15%] md:left-[15%] z-10"
                   onMouseEnter={() =>
                     setHoverData({
-                      title: "About Me!",
-                      description:
-                        "Hello, I'm Afonso. I'm a passionate developer creating cool things.",
+                      title: "UI/UX Expertise",
+                      description: "Crafting intuitive user interfaces.",
+                    })
+                  }
+                  onMouseLeave={() => setHoverData(null)}
+                />
+                <PolaroidImage
+                  imageUrl="https://placehold.co/144x128/B2D8B2/333333?text=Skill+2"
+                  caption="Development"
+                  altText="Development Polaroid"
+                  tilt={5}
+                  positioningClasses="top-[25%] right-[10%] md:top-[30%] md:right-[15%] z-20"
+                  onMouseEnter={() =>
+                    setHoverData({
+                      title: "Full-Stack Dev",
+                      description: "Building robust applications.",
+                    })
+                  }
+                  onMouseLeave={() => setHoverData(null)}
+                />
+                <PolaroidImage
+                  imageUrl="https://placehold.co/144x128/FFDAB9/333333?text=Skill+3"
+                  caption="Creative Tech"
+                  altText="Creative Tech Polaroid"
+                  tilt={-3}
+                  positioningClasses="bottom-[10%] left-[25%] md:bottom-[15%] md:left-[30%] z-10"
+                  onMouseEnter={() =>
+                    setHoverData({
+                      title: "Creative Solutions",
+                      description: "Innovating with technology.",
                     })
                   }
                   onMouseLeave={() => setHoverData(null)}
                 />
               </div>
 
-              {/* Image Links for NORMAL view */}
-              <div className="w-full flex justify-center items-center gap-6 md:gap-16 py-4 opacity-100 transition-opacity duration-500 ease-in-out">
+              {/* Image Links for NORMAL view - Preserving user's classes, ensure z-10 if needed */}
+              <div className="w-full flex justify-center items-center gap-6 md:gap-16 py-4 opacity-100 transition-opacity duration-500 ease-in-out z-10">
                 <ImageLink
                   imageSrc={require("../assets/git.png")}
                   link="https://www.github.com/afonsorek"
@@ -307,18 +292,17 @@ export default function Card({
                 />
               </div>
 
-              {/* Bottom section: Signature */}
-              <div className="w-full text-center md:text-right pt-2 md:pt-4 text-base md:text-lg opacity-100 transition-opacity duration-300">
+              {/* Bottom section: Signature - Preserving user's classes, ensure z-10 if needed */}
+              <div className="w-full text-center md:text-right pt-2 md:pt-4 text-base md:text-lg opacity-100 transition-opacity duration-300 z-10">
                 <p className="text-[#420B89]/[1.0]">afonsoRek@2025</p>
               </div>
             </>
           ) : (
             <>
               {/* --- COLLAPSED VIEW (isProjectsView is true) --- */}
-              {/* Only Image Links, vertically stacked and centered */}
-              <div className="flex flex-col items-center justify-center gap-6 py-4">
+              <div className="flex flex-col items-center justify-center h-full gap-6 py-4">
                 {" "}
-                {/* Increased gap for vertical stack */}
+                {/* Added h-full */}
                 <ImageLink
                   imageSrc={require("../assets/git.png")}
                   link="https://www.github.com/afonsorek"
